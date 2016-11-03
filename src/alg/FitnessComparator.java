@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 /***
  * Ein Individuum mit kleinerer Fitness-Zahl kommt vor einem Individuum
- * mit großer Fitness-Zahl
+ * mit groï¿½er Fitness-Zahl
  * @author Stefan
  *
  */

@@ -1,8 +1,7 @@
 package alg;
 
-import java.nio.channels.FileLockInterruptionException;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -14,7 +13,7 @@ public class Evolution {
 	public static final int WERTEBEREICH_BIS = 500;
 	
 	/***
-	 * Die Eingabe-Funktion, für ein Problem, das gelöst werden soll.
+	 * Die Eingabe-Funktion, fï¿½r ein Problem, das gelï¿½st werden soll.
 	 * @param gen
 	 * @return
 	 */
@@ -31,7 +30,7 @@ public class Evolution {
 	}
 	
 	/**
-	 * Funktion zum Testen einer Lösung
+	 * Funktion zum Testen einer Lï¿½sung
 	 * (Bei Minimalwertproblem = Inputfunktion)
 	 * @param gen
 	 * @return
@@ -53,12 +52,12 @@ public class Evolution {
 	 * @throws Exception 
 	 */
 	public static void evolve(int n) throws Exception{
-		// TODO: schön machen - Schnittstelle für InputFunktionsklassen
+		// TODO: schï¿½n machen - Schnittstelle fï¿½r InputFunktionsklassen
 		
 		// Schritt 2 - wir Starten mit Generation 0
 		int t = 0;
 		
-		List<Individuum> population = new ArrayList();
+		List<Individuum> population = new ArrayList<Individuum>();
 		// Schritt 3 - Erzeugen der Population
 		
 		Random r = new Random();
@@ -79,13 +78,13 @@ public class Evolution {
 		
 		// Schritt 4 - Bewertung der Urpopulation
 		for (Individuum individuum : population){
-			// Bei Nullstellen-Problem müsste man jetzt zuerst eine Lösung aus der Eingabefunktion holen
+			// Bei Nullstellen-Problem mï¿½sste man jetzt zuerst eine Lï¿½sung aus der Eingabefunktion holen
 			// und diese dann mit der Fitnessfunktion testen
 			individuum.setFitness(fitnessFunction(individuum.getGenom()));
 		}
 		
 		// Schritt 5 - Leere Kindgeneration anlegen
-		List<Individuum> kindgeneration = new ArrayList();
+		List<Individuum> kindgeneration = new ArrayList<>();
 		
 		// Sortieren der Eltern nach Fitness
 		population.sort(new FitnessComparator());
@@ -93,7 +92,7 @@ public class Evolution {
 		printPopulation(population);
 			
 		// durchgehen der Liste vom besten zum schlechtesten
-		// Berechnen der Wahrsch. für jedes Individuum 
+		// Berechnen der Wahrsch. fï¿½r jedes Individuum 
 		// rangbasierte Selektion
 		for (int i = 0; i < Evolution.POPULATIONSGROESSE; i++){
 			
@@ -104,7 +103,7 @@ public class Evolution {
 				currentIndividuum.setWahrsch_von(population.get(i-1).getWahrsch_bis());
 				currentIndividuum.setWahrsch_bis(currentIndividuum.getWahrsch_von() + currentIndividuum.getWahrscheinlichkeit());				
 			}else{
-				// für das erste Element
+				// fï¿½r das erste Element
 				currentIndividuum.setWahrsch_von(0.0);
 				currentIndividuum.setWahrsch_bis(currentIndividuum.getWahrscheinlichkeit());
 			}
@@ -115,9 +114,9 @@ public class Evolution {
 		// Schritt 6 - 12 Iteration
 		for (int i = 1; i<= Evolution.ANZAHL_KINDER; i++){
 			
-			// Schritt 7 - Eltern auswähelen
-			// Elternselektion => Zufällig			
-			// Zufallsselektion - rangbasierte Seleketion für Minimierungsprobleme
+			// Schritt 7 - Eltern auswï¿½helen
+			// Elternselektion => Zufï¿½llig			
+			// Zufallsselektion - rangbasierte Seleketion fï¿½r Minimierungsprobleme
 			
 			Individuum neuesKind = null;
 			
@@ -126,18 +125,18 @@ public class Evolution {
 				Individuum elternteil_A = selektiereElternteil(population);
 				Individuum elternteil_B = selektiereElternteil(population);
 				
-				// ToDo: Eltern dürfen nicht beide das gleiche Individuum sein
+				// ToDo: Eltern dï¿½rfen nicht beide das gleiche Individuum sein
 				
 				// Schritt 8 - ein Kind durch Rekombination erzeugen
 				
 				// Schritt 9 - Kind gegebenenfalls mutieren
 				
-				// Schritt 10 - neues Kind der Kindergeneration hinzufügen
+				// Schritt 10 - neues Kind der Kindergeneration hinzufï¿½gen
 			}		
 			
 			// Schritt 13 - Bewerte alle Individuuen der Kindergeneration
 			
-			// Schritt 14 - Übergang auf die Nachfolgegeneration
+			// Schritt 14 - ï¿½bergang auf die Nachfolgegeneration
 			
 		}
 	}
@@ -153,11 +152,11 @@ public class Evolution {
 			// Roulette Auswahlverfahren
 			if(currentIndividuum.getWahrsch_von() <= z || z < currentIndividuum.getWahrsch_bis()){
 				return currentIndividuum;
-				// currentIndividuum ist als Elternteil gewählt
+				// currentIndividuum ist als Elternteil gewï¿½hlt
 			}
 		}
 		
-		throw new Exception("Es wurde kein Individuum mit der gewürfelten Zufallszahl gefunden. Dies kann nicht sein.");
+		throw new Exception("Es wurde kein Individuum mit der gewï¿½rfelten Zufallszahl gefunden. Dies kann nicht sein.");
 	}
 	
 	public static void printPopulation(List<Individuum> population){
@@ -177,7 +176,7 @@ public class Evolution {
 	}
 	
 	/***
-	 * Berechnung der Wahrsch. für rangbasierte Selektion für Minimierungsporbleme
+	 * Berechnung der Wahrsch. fï¿½r rangbasierte Selektion fï¿½r Minimierungsporbleme
 	 * @param i Rang des Individuums, dessen Wahrsch. berechnet werden soll
 	 * @param r Anzahl der Individuuen der Population
 	 * @return
