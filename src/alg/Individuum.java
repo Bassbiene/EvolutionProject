@@ -2,8 +2,8 @@ package alg;
 
 public class Individuum {
 
-	public Individuum(double[] allele){
-		this.genom = allele;
+	public Individuum(double[] genom){
+		this.genom = genom;
 	}
 	
 	private Double fitness;	
@@ -48,8 +48,8 @@ public class Individuum {
 		return genom;
 	}
 
-	public void setGenom(double[] allele) {
-		this.genom = allele;
+	public void setGenom(double[] genom) {
+		this.genom = genom;
 	}
 
 
