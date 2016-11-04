@@ -15,26 +15,71 @@ public class Evolution {
 	public static final double MUTATIONSWAHRSCH = 0.1;
 	public static final Elternselektion ELTERNSELEKTION = Elternselektion.ZufaelligGleichverteilt;
 	public static final Rekombination REKOMBINATION = Rekombination.Arithmetisch;
+	public static final EingabeFunktion EINGABEFUNKTION = EingabeFunktion.GRIEWANK;
 	
 	/***
 	 * Die Eingabe-Funktion, fuer ein Problem, das geloest werden soll.
 	 * 
-	 * @param gen
-	 * @return
+	 * @param genom
+	 * @return den Funktionswert der Funktion fÃ¼r das gegebene Genom
 	 */
-	public static double inputFunction(double[] gen) {
+	public static double inputFunction(double[] genom) {
 
 		double res = 0;
 
-		res = Math.pow((gen[0] + 10 * gen[1]), 2);
-		res += 5 * Math.pow((gen[2] - gen[3]), 2);
-		res += Math.pow((gen[1] - 2 * gen[2]), 4);
-		res += 10 * Math.pow((gen[0] - gen[3]), 4);
+		switch (Evolution.EINGABEFUNKTION) {
+		case SKRIPT:
+		  //Testfunktion aus dem Skript
+            res = Math.pow((genom[0] + (10 * genom[1])), 2);
+            res += 5 * Math.pow((genom[2] - genom[3]), 2);
+            res += Math.pow((genom[1] - (2 * genom[2])), 4);
+            res += 10 * Math.pow((genom[0] - genom[3]), 4);
+		    break;
+		case PARABEL:
+	        // einfache Testfunktion
+	      res = Math.pow(genom[0]-2, 2);
+	      res += 2;
+		    break;
+		case GRIEWANK:
+	        //Griewank-Funktion
+	        res = 1 + summiereGriewank(genom);
+	        res -= multipliziereGriewank(genom);
 
+		    break;
+		}
+		
 		return res;
 	}
+/**
+ * Hilfsmethode zur Berechnung der Griewank-Funktion fÃ¼r das aktuelle Genom
+ * @param genom
+ * @return
+ */
+	private static double multipliziereGriewank(double[] genom) {
+         double res; 
+         
+         res = Math.cos((genom[0] / Math.sqrt(1)));
+         
+         for (int i = 1; i < genom.length; i++) {
+             res *= Math.cos((genom[i] / Math.sqrt(i+1)));
+         }
+         
+        return res;
+    }
 
-	/**
+    private static double summiereGriewank(double[] gen) {
+        double res = 0;
+        
+        for (int i = 0; i < gen.length; i++) {
+            double summe = Math.pow(gen[i], 2);
+            summe /= (400*gen.length);
+            res += summe;
+        }
+        
+        return res;
+    }
+
+    /**
 	 * Funktion zum Testen einer Lï¿½sung (Bei Minimalwertproblem =
 	 * Inputfunktion)
 	 * 
@@ -59,24 +104,13 @@ public class Evolution {
 	 * @throws Exception
 	 */
 	public static void evolve(int n) throws Exception {
-		// TODO: schï¿½n machen - Schnittstelle fï¿½r InputFunktionsklassen
-
-		List<Individuum> population = new ArrayList<Individuum>();
+		// TODO: schoen machen - Schnittstelle fuer InputFunktionsklassen
 
 		// Schritt 3 - Erzeugen der Urpopulation
 		Random r = new Random();
-
-		for (int i = 0; i < Evolution.POPULATIONSGROESSE; i++) {
-
-			double[] allele = new double[n];
-			for (int j = 0; j < n; j++) {
-				// ein Allel eines Individuums mit einem Wert im
-				// Wertebereich belegen
-				allele[j] = (double) r.nextInt(Evolution.WERTEBEREICH_BIS - Evolution.WERTEBEREICH_VON + 1)
-						+ Evolution.WERTEBEREICH_VON;
-			}
-			population.add(new Individuum(allele));
-		}
+		List<Individuum> population = new ArrayList<Individuum>();
+		
+		erzeugeUrpopulation(n, population, r);
 
 		// Ausgabe der Urpopulation
 		// System.out.println("Urpopulation:");
@@ -95,9 +129,7 @@ public class Evolution {
 			printCurrentStep("Schritt 5 - Leere Kindgeneration anlegen");
 			List<Individuum> kindgeneration = new ArrayList<>();
 
-			// Sortiert die Individuuen nach Fitness
-			// und ordnet Ihnen die rangbasierte Wahrscheinlichkeit für die
-			// Rouletteselektion zu
+			
 			if (Evolution.ELTERNSELEKTION == Elternselektion.Rouletteverfahren) {
 				bereiteRouletteSelektionVor(population);
 			}
@@ -137,7 +169,7 @@ public class Evolution {
 						break;
 					}
 
-					// die Wahrsch. sorgt dafür, dass sich nicht nur die besten
+					// die Wahrsch. sorgt dafï¿½r, dass sich nicht nur die besten
 					// x rekombinieren, sond. auch andere eine Chance haben
 					double zufallRekombination = r.nextDouble();
 					if (zufallRekombination < Evolution.REKOMBINATIONSWAHRSCH) {
@@ -178,16 +210,16 @@ public class Evolution {
 			printCurrentStep("Schritt 14 - Uebergang auf die Nachfolgegeneration");
 			List<Individuum> gesamtpopulation = new ArrayList<>();
 			// die Gesamtpopulation soll alle Eltern und Kinder enthalten,
-			// sodass bei der Umweltselektion auch die Eltern berücksichtigt
+			// sodass bei der Umweltselektion auch die Eltern berï¿½cksichtigt
 			// werden und in die
-			// nächste Generation übernommen werden können
+			// nï¿½chste Generation ï¿½bernommen werden kï¿½nnen
 			gesamtpopulation.addAll(population);
 			gesamtpopulation.addAll(kindgeneration);
 
 			population.clear();
 
-			// Schritt 15 - Selektiere Individuuen für die nächste Generation
-			printCurrentStep("Schritt 15 - Selektiere Individuuen für die nächste Generation");
+			// Schritt 15 - Selektiere Individuuen fï¿½r die nï¿½chste Generation
+			printCurrentStep("Schritt 15 - Selektiere Individuuen fï¿½r die nï¿½chste Generation");
 			// Umweltselektion
 			bereiteRouletteSelektionVor(gesamtpopulation);
 			
@@ -213,19 +245,33 @@ public class Evolution {
 		printIndividuum(population.get(0));
 
 	}
+    public static void erzeugeUrpopulation(int n, List<Individuum> population,
+            Random r) {
+        for (int i = 0; i < Evolution.POPULATIONSGROESSE; i++) {
+
+			double[] allele = new double[n];
+			for (int j = 0; j < n; j++) {
+				// ein Allel eines Individuums mit einem Wert im
+				// Wertebereich belegen
+				allele[j] = (double) r.nextInt(Evolution.WERTEBEREICH_BIS - Evolution.WERTEBEREICH_VON + 1)
+						+ Evolution.WERTEBEREICH_VON;
+			}
+			population.add(new Individuum(allele));
+		}
+    }
 
 	/**
 	 * Sortiert die Individuuen nach Fitness Ordnet Ihnen die rangbasierte
-	 * Wahrscheinlichkeit für die Rouletteselektion zu
+	 * Wahrscheinlichkeit fï¿½r die Rouletteselektion zu
 	 * 
 	 * @param population
 	 */
 	public static void bereiteRouletteSelektionVor(List<Individuum> population) {
-		// Sortieren der Eltern nach Fitness
+		// Sortieren der Individuen nach Fitness
 		population.sort(new FitnessComparator());
 
 		// durchgehen der Liste vom besten zum schlechtesten
-		// Berechnen der Wahrsch. fï¿½r jedes Individuum
+		// Berechnen der Wahrsch. fuer jedes Individuum
 		// rangbasierte Selektion
 		for (int i = 0; i < population.size(); i++) {
 
@@ -237,7 +283,7 @@ public class Evolution {
 				currentIndividuum
 						.setWahrsch_bis(currentIndividuum.getWahrsch_von() + currentIndividuum.getWahrscheinlichkeit());
 			} else {
-				// fï¿½r das erste Element
+				// fuer das erste Element
 				currentIndividuum.setWahrsch_von(0.0);
 				currentIndividuum.setWahrsch_bis(currentIndividuum.getWahrscheinlichkeit());
 			}
@@ -265,7 +311,7 @@ public class Evolution {
 
 		Random r = new Random();
 
-		// wähle zufällig, welches Gen mutiert werden soll
+		// wï¿½hle zufï¿½llig, welches Gen mutiert werden soll
 		// wirft eine Zufallszahl zwischen 0 inkl. und genom.length exklusive
 		int zufallGen = r.nextInt(genom.length);
 
@@ -275,7 +321,7 @@ public class Evolution {
 
 		// mutiere das Gen
 		genom[zufallGen] = genom[zufallGen] + zufallsZahl;
-		// falls der Wertebereich überschritten wird, sorge dafür dass die
+		// falls der Wertebereich ï¿½berschritten wird, sorge dafï¿½r dass die
 		// Schranken eingehalten werden
 		if (genom[zufallGen] > Evolution.WERTEBEREICH_BIS) {
 			genom[zufallGen] = Evolution.WERTEBEREICH_BIS;
@@ -324,7 +370,7 @@ public class Evolution {
 
 		double[] genom_Kind = new double[genom_A.length];
 		
-		// rekombiniere alle einzelnen Allele (zufälliger Wert zwischen den beiden Werten)
+		// rekombiniere alle einzelnen Allele (zufï¿½lliger Wert zwischen den beiden Werten)
 		Random r = new Random();
 		
 		for (int i = 0; i < genom_A.length; i++) {
@@ -333,21 +379,28 @@ public class Evolution {
 			double wertVon = Math.min(genom_A[i] , genom_B[i]);
 			int bound = 500;
 			
+			//next Double wirft Werte von 0 bis 1.0, wie strecken wir diesen Wertebreich auf einen bestimmten Wertebereich?
+			
 			if (wertBis == wertVon){
 				genom_Kind[i] = wertVon;
 			} else{
-				try {
-					if (wertBis < 0){
-						bound = (int) (Math.round((wertBis - wertVon - 1)  * 1000));
-						System.out.println(bound);
-					}else{
-						bound = (int) (Math.round((wertBis - wertVon + 1)  * 1000));
-						System.out.println(bound);
-					}
-					genom_Kind[i] = (double) (r.nextInt(bound)) / 1000 + wertVon;
-				} catch (Exception e) {
-					System.out.println("sdf");
-				}
+			    //originalCode
+//				try {
+//					if (wertBis < 0){
+//						bound = (int) (Math.round((wertBis - wertVon - 1)  * 100000));
+//						System.out.println(bound);
+//					}else{
+//						bound = (int) (Math.round((wertBis - wertVon + 1)  * 100000));
+//						System.out.println(bound);
+//					}
+//					genom_Kind[i] = (double) (r.nextInt(bound)) / 1000 + wertVon;
+//				} catch (Exception e) {
+//					System.out.println("sdf");
+//				}
+			    
+			    //Angelas Versuch
+			    double zufallszahl = r.nextDouble();
+			    genom_Kind[i] = zufallszahl * (wertBis-wertVon)+wertVon;
 			}
 			
 			
@@ -360,12 +413,12 @@ public class Evolution {
 	}
 	
 	/**
-	 * Rouletteverfahren Wählt zufällig ein Individuum aus einer Population
+	 * Rouletteverfahren Wï¿½hlt zufï¿½llig ein Individuum aus einer Population
 	 * anhand des Rouletteverfahrens
 	 * 
 	 * @param population
-	 *            Die Population, aus denen ein Individuum gewählt werden soll
-	 * @return gewähltes Individuum
+	 *            Die Population, aus denen ein Individuum gewï¿½hlt werden soll
+	 * @return gewï¿½hltes Individuum
 	 * @throws Exception
 	 */
 	public static Individuum selektiereIndividuumRoulette(List<Individuum> population) throws Exception {
@@ -389,7 +442,7 @@ public class Evolution {
 	}
 
 	/**
-	 * Gibt rein zufällig ein Individuum aus der Population zurück.
+	 * Gibt rein zufï¿½llig ein Individuum aus der Population zurï¿½ck.
 	 * @param population
 	 * @return
 	 */
