@@ -14,7 +14,7 @@ public class Evolution {
 	public static final double REKOMBINATIONSWAHRSCH = 0.3;
 	public static final double MUTATIONSWAHRSCH = 0.1;
 	public static final Elternselektion ELTERNSELEKTION = Elternselektion.ZufaelligGleichverteilt;
-	public static final Rekombination REKOMBINATION = Rekombination.Intermediaer;
+	public static final Rekombination REKOMBINATION = Rekombination.Arithmetisch;
 	
 	/***
 	 * Die Eingabe-Funktion, fuer ein Problem, das geloest werden soll.
@@ -331,8 +331,26 @@ public class Evolution {
 			
 			double wertBis = Math.max(genom_A[i] , genom_B[i]);
 			double wertVon = Math.min(genom_A[i] , genom_B[i]);
+			int bound = 500;
 			
-			genom_Kind[i] = (double) (r.nextInt((int)(wertBis - wertVon + 1) * 1000)) / 1000 + wertVon;
+			if (wertBis == wertVon){
+				genom_Kind[i] = wertVon;
+			} else{
+				try {
+					if (wertBis < 0){
+						bound = (int) (Math.round((wertBis - wertVon - 1)  * 1000));
+						System.out.println(bound);
+					}else{
+						bound = (int) (Math.round((wertBis - wertVon + 1)  * 1000));
+						System.out.println(bound);
+					}
+					genom_Kind[i] = (double) (r.nextInt(bound)) / 1000 + wertVon;
+				} catch (Exception e) {
+					System.out.println("sdf");
+				}
+			}
+			
+			
 			
 			//genom_Kind[i] = ((double) r.nextInt((int)( genom_B[i] - genom_A[i] + 1) * 1000) + genom_A[i]) / 1000;	
 			//allele[j] = (double) r.nextInt(Evolution.WERTEBEREICH_BIS - Evolution.WERTEBEREICH_VON + 1) + Evolution.WERTEBEREICH_VON;
