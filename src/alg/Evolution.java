@@ -6,19 +6,20 @@ import java.util.Random;
 
 public class Evolution {
 
-	public static final int GENOMGROESSE = 4;
-	public static final int MAX_GENERATIONEN = 2;
-	public static final int POPULATIONSGROESSE = 5;
-	public static final int ANZAHL_KINDER = 5;
+	public static final int GENOMGROESSE = 20;
+	public static final int MAX_GENERATIONEN = 2000;
+	public static final int POPULATIONSGROESSE = 100;
+	public static final int ANZAHL_KINDER = 400;
 	public static final int WERTEBEREICH_VON = -512;
 	public static final int WERTEBEREICH_BIS = 511;
 	public static final double REKOMBINATIONSWAHRSCH = 0.3;
 	public static final double MUTATIONSWAHRSCH = 0.1;
 	public static final Elternselektion ELTERNSELEKTION = Elternselektion.Rouletteverfahren;
-	public static final Umweltselektion UMWELTSELEKTION = Umweltselektion.Deterministisch;
+	public static final Umweltselektion UMWELTSELEKTION = Umweltselektion.Roulette;
 	public static final Rekombination REKOMBINATION = Rekombination.Arithmetisch;
 	public static final EingabeFunktion EINGABEFUNKTION = EingabeFunktion.GRIEWANK;
-	public static boolean ZWISCHENERGEBNISSE_AUSGEBEN = true;
+	public static final boolean ZWISCHENERGEBNISSE_AUSGEBEN = false;
+	public static final int ABBRUCH_DURCHLAEUFE_OHNE_AENDERUNG = 20;
 	
 	
 	public static void main(String[] args) throws Exception {
@@ -122,6 +123,9 @@ public class Evolution {
 	public static void evolve(int n) throws Exception {
 		// TODO: schoen machen - Schnittstelle fuer InputFunktionsklassen
 
+		double championFitness = Double.MAX_VALUE;
+		int anzahlDurchlaeufeMitGleichemChampion = -1;
+		
 		Random r = new Random();
 		
 		// Schritt 3 - Erzeugen der Urpopulation		
@@ -314,15 +318,37 @@ public class Evolution {
 				break;				
 			}
 			
+			// Prüfe, wie oft sich die Fitness des Champions verändert hat
+			// Beende Evolutionsalgorithmus, wenn sich die Fitness entspr. der Abbruchanzahl der Versuche
+			// nicht mehr veraendert hat
+			population.sort(new FitnessComparator());
+			if (anzahlDurchlaeufeMitGleichemChampion == -1){
+				championFitness = population.get(0).getFitness();
+				anzahlDurchlaeufeMitGleichemChampion = 0;
+				
+			} else if (anzahlDurchlaeufeMitGleichemChampion < Evolution.ABBRUCH_DURCHLAEUFE_OHNE_AENDERUNG) {
+				
+				double newChampionFitness = population.get(0).getFitness();
+				if (championFitness == newChampionFitness){
+					anzahlDurchlaeufeMitGleichemChampion += 1;
+				} else {
+					championFitness = newChampionFitness;
+					anzahlDurchlaeufeMitGleichemChampion = 0;
+				}
+			} else {
+				System.out.println("\nAnzahl durchlaeufe fuer den besten Champion: " + (t - Evolution.ABBRUCH_DURCHLAEUFE_OHNE_AENDERUNG));
+				break;
+			}
+						
 		}
 
 		// Schritt 17: Ermittle bestes Individuum nach Ablauf des
 		// Evolutionsalgorithmus
 		printCurrentStep("Schritt 17: Ermittle bestes Individuum nach Ablauf des Evolutionsalgorithmus");
-		population.sort(new FitnessComparator());
+		
 
-		System.out.println("\nDies ist die letzte Population:");
-		printPopulation(population);
+		//System.out.println("\nDies ist die letzte Population:");
+		//printPopulation(population);
 
 		System.out.println("\nDies ist das beste Individuum:");
 		printIndividuum(population.get(0));
