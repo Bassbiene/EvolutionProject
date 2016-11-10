@@ -6,16 +6,32 @@ import java.util.Random;
 
 public class Evolution {
 
-	public static final int MAX_GENERATIONEN = 2000;
-	public static final int POPULATIONSGROESSE = 100;
-	public static final int ANZAHL_KINDER = 100;
-	public static final int WERTEBEREICH_VON = -500;
-	public static final int WERTEBEREICH_BIS = 500;
+	public static final int GENOMGROESSE = 4;
+	public static final int MAX_GENERATIONEN = 2;
+	public static final int POPULATIONSGROESSE = 5;
+	public static final int ANZAHL_KINDER = 5;
+	public static final int WERTEBEREICH_VON = -512;
+	public static final int WERTEBEREICH_BIS = 511;
 	public static final double REKOMBINATIONSWAHRSCH = 0.3;
 	public static final double MUTATIONSWAHRSCH = 0.1;
-	public static final Elternselektion ELTERNSELEKTION = Elternselektion.ZufaelligGleichverteilt;
+	public static final Elternselektion ELTERNSELEKTION = Elternselektion.Rouletteverfahren;
+	public static final Umweltselektion UMWELTSELEKTION = Umweltselektion.Deterministisch;
 	public static final Rekombination REKOMBINATION = Rekombination.Arithmetisch;
 	public static final EingabeFunktion EINGABEFUNKTION = EingabeFunktion.GRIEWANK;
+	public static boolean ZWISCHENERGEBNISSE_AUSGEBEN = true;
+	
+	
+	public static void main(String[] args) throws Exception {
+
+//		List<Individuum> population = new ArrayList<Individuum>();
+//		population.add(new Individuum(new double[] {1.0, 1.0, 1.0, 1.0}));
+//		bewertePopulation(population);
+//		printPopulation(population);
+		
+		
+		evolve(Evolution.GENOMGROESSE);	
+	}
+	
 	
 	/***
 	 * Die Eingabe-Funktion, fuer ein Problem, das geloest werden soll.
@@ -50,11 +66,12 @@ public class Evolution {
 		
 		return res;
 	}
-/**
- * Hilfsmethode zur Berechnung der Griewank-Funktion f√ºr das aktuelle Genom
- * @param genom
- * @return
- */
+
+	/**
+	 * Hilfsmethode zur Berechnung des zweiten Teils (Produkt) der Griewank-Funktion
+	 * @param genom
+	 * @return
+	 */
 	private static double multipliziereGriewank(double[] genom) {
          double res; 
          
@@ -67,6 +84,11 @@ public class Evolution {
         return res;
     }
 
+	/**
+	 * Hilfsmethode zur Berechnung des ersten Teils (Summe) der Griewank-Funktion
+	 * @param gen
+	 * @return
+	 */
     private static double summiereGriewank(double[] gen) {
         double res = 0;
         
@@ -91,13 +113,7 @@ public class Evolution {
 		return inputFunction(gen);
 	}
 
-	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
-
-		evolve(4);
-	}
-
-	/***
+	/**
 	 * 
 	 * @param n
 	 *            Anzahl der Variablen der inputFunction (= Groesse des Genoms)
@@ -106,34 +122,37 @@ public class Evolution {
 	public static void evolve(int n) throws Exception {
 		// TODO: schoen machen - Schnittstelle fuer InputFunktionsklassen
 
-		// Schritt 3 - Erzeugen der Urpopulation
 		Random r = new Random();
+		
+		// Schritt 3 - Erzeugen der Urpopulation		
 		List<Individuum> population = new ArrayList<Individuum>();
 		
-		erzeugeUrpopulation(n, population, r);
+		erzeugeUrpopulation(n, population);
 
-		// Ausgabe der Urpopulation
-		// System.out.println("Urpopulation:");
-		// printPopulation(population);
 
+		// Schritt 4 - Bewertung der Urpopulation
+		printCurrentStep("Schritt 4 - Bewertung der Population");
+		bewertePopulation(population);
+		
 		// Schritt 2 - wir Starten mit Generation 0
 		for (int t = 0; t < Evolution.MAX_GENERATIONEN; t++) {
 
 			System.out.println("Generation: " + t);
-
-			// Schritt 4 - Bewertung der Population
-			printCurrentStep("Schritt 4 - Bewertung der Population");
-			bewertePopulation(population);
-
+		
 			// Schritt 5 - Leere Kindgeneration anlegen
 			printCurrentStep("Schritt 5 - Leere Kindgeneration anlegen");
 			List<Individuum> kindgeneration = new ArrayList<>();
-
 			
 			if (Evolution.ELTERNSELEKTION == Elternselektion.Rouletteverfahren) {
-				bereiteRouletteSelektionVor(population);
+				bereiteRouletteSelektionVor(population);				
 			}
 
+			if (Evolution.ZWISCHENERGEBNISSE_AUSGEBEN){
+				 // Ausgabe der Urpopulation
+				 System.out.println("Population " + t + ":");
+				 printPopulation(population);
+			}	
+			
 			// Schritt 6 - 12 Iteration
 			for (int i = 1; i <= Evolution.ANZAHL_KINDER; i++) {
 
@@ -169,10 +188,23 @@ public class Evolution {
 						break;
 					}
 
+					if (Evolution.ZWISCHENERGEBNISSE_AUSGEBEN){
+						 // Ausgabe der Urpopulation
+						System.out.println("\nZwei Eltern wurden gew‰hlt: ");
+						printIndividuum(elternteil_A);
+						printIndividuum(elternteil_B);
+					}	
+					
 					// die Wahrsch. sorgt dafÔøΩr, dass sich nicht nur die besten
 					// x rekombinieren, sond. auch andere eine Chance haben
 					double zufallRekombination = r.nextDouble();
 					if (zufallRekombination < Evolution.REKOMBINATIONSWAHRSCH) {
+						
+						if (Evolution.ZWISCHENERGEBNISSE_AUSGEBEN){
+							System.out.println("\nZufallswert Rekombination: " + zufallRekombination);
+							System.out.println("Die beiden Individuuen werden nun rekombiniert");
+						}
+						
 						// Schritt 8 - ein Kind durch Rekombination erzeugen
 						printCurrentStep("Schritt 8 - ein Kind durch Rekombination erzeugen");
 						
@@ -185,6 +217,16 @@ public class Evolution {
 							break;
 						}
 						
+						if (Evolution.ZWISCHENERGEBNISSE_AUSGEBEN){
+							System.out.println("\nDie Rekombination ergab folgendes Kind:");
+							printIndividuum(neuesKind);
+						}
+						
+					} else{
+						if (Evolution.ZWISCHENERGEBNISSE_AUSGEBEN){
+							System.out.println("\nZufallswert Rekombination: " + zufallRekombination);
+							System.out.println("Die beiden Individuuen wurden nicht rekombiniert.");
+						}
 					}
 
 				}
@@ -192,9 +234,22 @@ public class Evolution {
 				// Schritt 9 - Kind gegebenenfalls mutieren
 				printCurrentStep("Schritt 9 - Kind gegebenenfalls mutieren");
 				double zufallMutation = r.nextDouble();
+								
 				if (zufallMutation < Evolution.MUTATIONSWAHRSCH) {
-
+					
 					mutiereIndividuum(neuesKind);
+					
+					if (Evolution.ZWISCHENERGEBNISSE_AUSGEBEN){
+						System.out.println("\nZufallszahl Mutation: " + zufallMutation);
+						System.out.println("Das Individuum wurde mutiert:");
+						printIndividuum(neuesKind);
+					}
+					
+				} else{
+					if (Evolution.ZWISCHENERGEBNISSE_AUSGEBEN){
+						System.out.println("\nZufallszahl Mutation: " + zufallMutation);
+						System.out.println("Das Individuum wurde nicht mutiert");
+					}
 				}
 
 				// Schritt 10 - neues Kind der Kindergeneration hinzufuegen
@@ -220,22 +275,50 @@ public class Evolution {
 
 			// Schritt 15 - Selektiere Individuuen fÔøΩr die nÔøΩchste Generation
 			printCurrentStep("Schritt 15 - Selektiere Individuuen fÔøΩr die nÔøΩchste Generation");
-			// Umweltselektion
-			bereiteRouletteSelektionVor(gesamtpopulation);
 			
-			while (population.size() < Evolution.POPULATIONSGROESSE) {
-
-				Individuum selektiertesIndividuum = selektiereIndividuumRoulette(gesamtpopulation);
-				if (!population.contains(selektiertesIndividuum)) {
-					population.add(selektiertesIndividuum);
+			// Umweltselektion
+			switch (Evolution.UMWELTSELEKTION){
+			case Roulette:
+				
+				bereiteRouletteSelektionVor(gesamtpopulation);
+				if (Evolution.ZWISCHENERGEBNISSE_AUSGEBEN){
+					System.out.println("\nUmweltselektion: Rouletteverfahren");
+					System.out.println("Aktuelle Gesamtpopulation mit Selektionswahrscheinlichkeiten:");
+					printPopulation(gesamtpopulation);
 				}
+				
+				while (population.size() < Evolution.POPULATIONSGROESSE) {
+
+					Individuum selektiertesIndividuum = selektiereIndividuumRoulette(gesamtpopulation);
+					if (!population.contains(selektiertesIndividuum)) {
+						population.add(selektiertesIndividuum);
+					}
+				}	
+				break;
+				
+			case Deterministisch:
+				// Sortiere die Gesamtpopulation entsprechend ihrer Fitness und w‰hle nur die besten
+				// fuer die naechste Generation
+				gesamtpopulation.sort(new FitnessComparator());
+				
+				if (Evolution.ZWISCHENERGEBNISSE_AUSGEBEN){
+					System.out.println("\nUmweltselektion: Deterministisch");
+					System.out.println("Aktuelle Gesamtpopulation mit Fitness:");
+					printPopulation(gesamtpopulation);
+				}
+				
+				for (int i = 0; i < Evolution.POPULATIONSGROESSE; i++){
+					population.add(gesamtpopulation.get(i));
+				}
+				
+				break;				
 			}
+			
 		}
 
 		// Schritt 17: Ermittle bestes Individuum nach Ablauf des
 		// Evolutionsalgorithmus
 		printCurrentStep("Schritt 17: Ermittle bestes Individuum nach Ablauf des Evolutionsalgorithmus");
-		bewertePopulation(population);
 		population.sort(new FitnessComparator());
 
 		System.out.println("\nDies ist die letzte Population:");
@@ -245,8 +328,16 @@ public class Evolution {
 		printIndividuum(population.get(0));
 
 	}
-    public static void erzeugeUrpopulation(int n, List<Individuum> population,
-            Random r) {
+	
+	/**
+	 * Erzeugt eine Population mit n Individuuen
+	 * @param n
+	 * @param population
+	 */
+    public static void erzeugeUrpopulation(int n, List<Individuum> population) {
+    	
+    	Random r = new Random();
+    	
         for (int i = 0; i < Evolution.POPULATIONSGROESSE; i++) {
 
 			double[] allele = new double[n];
@@ -384,29 +475,9 @@ public class Evolution {
 			if (wertBis == wertVon){
 				genom_Kind[i] = wertVon;
 			} else{
-			    //originalCode
-//				try {
-//					if (wertBis < 0){
-//						bound = (int) (Math.round((wertBis - wertVon - 1)  * 100000));
-//						System.out.println(bound);
-//					}else{
-//						bound = (int) (Math.round((wertBis - wertVon + 1)  * 100000));
-//						System.out.println(bound);
-//					}
-//					genom_Kind[i] = (double) (r.nextInt(bound)) / 1000 + wertVon;
-//				} catch (Exception e) {
-//					System.out.println("sdf");
-//				}
-			    
-			    //Angelas Versuch
 			    double zufallszahl = r.nextDouble();
 			    genom_Kind[i] = zufallszahl * (wertBis-wertVon)+wertVon;
 			}
-			
-			
-			
-			//genom_Kind[i] = ((double) r.nextInt((int)( genom_B[i] - genom_A[i] + 1) * 1000) + genom_A[i]) / 1000;	
-			//allele[j] = (double) r.nextInt(Evolution.WERTEBEREICH_BIS - Evolution.WERTEBEREICH_VON + 1) + Evolution.WERTEBEREICH_VON;
 		}
 		
 		return new Individuum(genom_Kind);
@@ -476,7 +547,7 @@ public class Evolution {
 		for (int i = 0; i < individuum.getGenom().length; i++) {
 			ausgabeString += individuum.getGenom()[i] + "  ";
 		}
-		ausgabeString += " - Fitness: " + individuum.getFitness();
+		ausgabeString += "\nFitness: " + individuum.getFitness();
 		ausgabeString += " - Wahrsch.: " + individuum.getWahrscheinlichkeit();
 		ausgabeString += " - Wahrsch_von: " + individuum.getWahrsch_von();
 		ausgabeString += " - Wahrsch_bis: " + individuum.getWahrsch_bis();

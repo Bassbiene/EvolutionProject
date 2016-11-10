@@ -1,0 +1,21 @@
+
+Testfunktion: Griewank (n=20)
+Kodierung: reelle Kodierung
+
+
+Variationen:
+------------
+Rekombination: Arithmetisch; Intermediär; Wahrsch. 30%
+Umweltselektion: Roulette; deterministisch       => beides aus Eltern und Kindern
+Populationsgröße, Anz. Kinder: 10,40;  50,200;  100,400
+
+
+Fix:
+----
+Elternselektion: Roulette
+Mutation: Mutationsrate fix; nur Kinder; Wahrsch. 10%
+
+
+test => ab wie viel Generationen wird Wert nicht mehr besser?
+also => ist das Ergebnis mehr von Umweltsel., Elternsel. oder Pop-gr. abhängig
+
