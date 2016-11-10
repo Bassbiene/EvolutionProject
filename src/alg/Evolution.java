@@ -2,17 +2,18 @@ package alg;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 public class Evolution {
 
 	public static final int GENOMGROESSE = 20;
 	public static final int MAX_GENERATIONEN = 2000;
-	public static final int POPULATIONSGROESSE = 100;
-	public static final int ANZAHL_KINDER = 400;
+	public static final int POPULATIONSGROESSE = 10;
+	public static final int ANZAHL_KINDER = 40;
 	public static final int WERTEBEREICH_VON = -512;
 	public static final int WERTEBEREICH_BIS = 511;
-	public static final double REKOMBINATIONSWAHRSCH = 0.3;
+	public static final double REKOMBINATIONSWAHRSCH = 0.75;
 	public static final double MUTATIONSWAHRSCH = 0.1;
 	public static final Elternselektion ELTERNSELEKTION = Elternselektion.Rouletteverfahren;
 	public static final Umweltselektion UMWELTSELEKTION = Umweltselektion.Roulette;
@@ -573,7 +574,7 @@ public class Evolution {
 		for (int i = 0; i < individuum.getGenom().length; i++) {
 			ausgabeString += individuum.getGenom()[i] + "  ";
 		}
-		ausgabeString += "\nFitness: " + individuum.getFitness();
+		ausgabeString += "\nFitness: " + String.format(Locale.GERMAN, "%.16f", individuum.getFitness());
 		ausgabeString += " - Wahrsch.: " + individuum.getWahrscheinlichkeit();
 		ausgabeString += " - Wahrsch_von: " + individuum.getWahrsch_von();
 		ausgabeString += " - Wahrsch_bis: " + individuum.getWahrsch_bis();
