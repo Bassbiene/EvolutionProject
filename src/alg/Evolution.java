@@ -9,15 +9,15 @@ public class Evolution {
 
 	public static final int GENOMGROESSE = 20;
 	public static final int MAX_GENERATIONEN = 2000;
-	public static final int POPULATIONSGROESSE = 10;
-	public static final int ANZAHL_KINDER = 40;
+	public static final int POPULATIONSGROESSE = 50;
+	public static final int ANZAHL_KINDER = 200;
 	public static final int WERTEBEREICH_VON = -512;
 	public static final int WERTEBEREICH_BIS = 511;
 	public static final double REKOMBINATIONSWAHRSCH = 0.75;
 	public static final double MUTATIONSWAHRSCH = 0.1;
 	public static final Elternselektion ELTERNSELEKTION = Elternselektion.Rouletteverfahren;
 	public static final Umweltselektion UMWELTSELEKTION = Umweltselektion.Roulette;
-	public static final Rekombination REKOMBINATION = Rekombination.Arithmetisch;
+	public static final Rekombination REKOMBINATION = Rekombination.Intermediaer;
 	public static final EingabeFunktion EINGABEFUNKTION = EingabeFunktion.GRIEWANK;
 	public static final boolean ZWISCHENERGEBNISSE_AUSGEBEN = false;
 	public static final int ABBRUCH_DURCHLAEUFE_OHNE_AENDERUNG = 20;
