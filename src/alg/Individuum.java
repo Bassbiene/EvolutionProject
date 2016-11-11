@@ -9,7 +9,18 @@ public class Individuum {
 	private Double fitness;	
 	private double[] genom;
 	private Double wahrscheinlichkeit;
-	public Double getWahrsch_von() {
+	private Double zufallszahlRoulette;
+	
+	
+	public Double getZufallszahlRoulette() {
+        return zufallszahlRoulette;
+    }
+
+    public void setZufallszahlRoulette(Double zufallszahlRoulette) {
+        this.zufallszahlRoulette = zufallszahlRoulette;
+    }
+
+    public Double getWahrsch_von() {
 		return wahrsch_von;
 	}
 
