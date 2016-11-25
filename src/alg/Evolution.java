@@ -9,8 +9,8 @@ public class Evolution {
 
     public static final int GENOMGROESSE = 20;
     public static final int MAX_GENERATIONEN = 2000;
-    public static final int POPULATIONSGROESSE = 200;
-    public static final int ANZAHL_KINDER = 800;
+    public static final int POPULATIONSGROESSE = 500;
+    public static final int ANZAHL_KINDER = 2000;
     public static final int WERTEBEREICH_VON = -512;
     public static final int WERTEBEREICH_BIS = 511;
     public static final double REKOMBINATIONSWAHRSCH = 0.75;
