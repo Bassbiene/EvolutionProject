@@ -7,10 +7,10 @@ import java.util.Random;
 
 public class Evolution {
 
-    public static final int GENOMGROESSE = 20;
-    public static final int MAX_GENERATIONEN = 2000;
-    public static final int POPULATIONSGROESSE = 500;
-    public static final int ANZAHL_KINDER = 2000;
+    public static final int GENOMGROESSE = 3;
+    public static final int MAX_GENERATIONEN = 3;
+    public static final int POPULATIONSGROESSE = 5;
+    public static final int ANZAHL_KINDER = 10;
     public static final int WERTEBEREICH_VON = -512;
     public static final int WERTEBEREICH_BIS = 511;
     public static final double REKOMBINATIONSWAHRSCH = 0.75;
@@ -19,7 +19,7 @@ public class Evolution {
     public static final Umweltselektion UMWELTSELEKTION = Umweltselektion.Deterministisch;
     public static final Rekombination REKOMBINATION = Rekombination.Arithmetisch;
     public static final EingabeFunktion EINGABEFUNKTION = EingabeFunktion.GRIEWANK;
-    public static final boolean ZWISCHENERGEBNISSE_AUSGEBEN = false;
+    public static final boolean ZWISCHENERGEBNISSE_AUSGEBEN = true;
     public static final int ABBRUCH_DURCHLAEUFE_OHNE_AENDERUNG = 20;
 
     public static void main(String[] args) throws Exception {
@@ -367,7 +367,7 @@ public class Evolution {
                 }
             } else {
                 System.out.println(
-                        "\nAnzahl durchlaeufe fuer den besten Champion: " + (t
+                        "\nAnzahl Generationen fuer den besten Champion: " + (t
                                 - Evolution.ABBRUCH_DURCHLAEUFE_OHNE_AENDERUNG));
                 break;
             }
@@ -383,7 +383,7 @@ public class Evolution {
         // printPopulation(population);
 
         System.out.println("\nDies ist das beste Individuum:");
-        printIndividuum(population.get(0));
+        printIndividuum(population.get(0), "%.16f", true);
 
     }
 
@@ -612,7 +612,7 @@ public class Evolution {
      */
     public static void printPopulation(List<Individuum> population) {
         for (Individuum individuum : population) {
-            printIndividuum(individuum);
+            printIndividuum(individuum, "%.2f", false);
         }
     }
 
@@ -652,8 +652,7 @@ public class Evolution {
     
    
     
-    public static void printIndividuum(Individuum individuum) {
-        String format = "%.16f";
+    public static void printIndividuum(Individuum individuum, String format, boolean zeilenumbruch) {
         String ausgabeString = "Genom: [";
 
         for (int i = 0; i < individuum.getGenom().length; i++) {
@@ -661,7 +660,12 @@ public class Evolution {
                     individuum.getGenom()[i]) + " ";
         }
         ausgabeString += "]";
-        ausgabeString += "\nFitness: " + String.format(Locale.GERMAN, format,
+        if (zeilenumbruch){
+        	ausgabeString += "\n";
+        } else{
+        	ausgabeString += " - ";
+        }
+        ausgabeString += "Fitness: " + String.format(Locale.GERMAN, format,
                 individuum.getFitness());
         
         System.out.println(ausgabeString);
